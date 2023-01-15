@@ -1,0 +1,10 @@
+<!--Place this in ~/.m2-->
+<settings>
+    <servers>
+        <server>
+            <id>nexus-snapshots</id>
+            <username></username>
+            <password></password>
+        </server>
+    </servers>
+</settings>
