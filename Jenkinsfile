@@ -26,6 +26,8 @@ pipeline {
                 script {
                     echo "building image"
                     buildImage 'joeri-abbo/demo-app:jma-3.0'
+                    dockerLogin()
+                    dockerPush 'joeri-abbo/demo-app:jma-3.0'
                 }
             }
         }
