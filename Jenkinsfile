@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     echo "building image"
-                    buildImage()
+                    buildImage 'joeri-abbo/demo-app:jma-3.0'
                 }
             }
         }
