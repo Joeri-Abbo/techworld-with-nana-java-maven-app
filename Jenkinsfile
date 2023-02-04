@@ -1,10 +1,11 @@
 
 pipeline {
     agent any
-    environment {
-        IMAGE_NAME = "joeriabbo/java-maven-app:2.0"
+    tools {
+        maven: "Maven"
     }
     stages {
+
         stage("increment version") {
             steps {
                 script {
