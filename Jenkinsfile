@@ -2,7 +2,7 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = "joeriabbo/java-maven-app"
+        IMAGE_NAME = "joeriabbo/java-maven-app:2.0"
     }
     stages {
         stage("increment version") {
@@ -38,10 +38,11 @@ pipeline {
                 script {
                     echo "deploying"
                     def shellCmd = "bash ./server.sh ${IMAGE_NAME}"
+                    def ec2Instance = "docker@docker@joeriabbo.nl"
                     sshagent(['ec2-server-key']){
-                        sh "scp server.sh docker@docker@joeriabbo.nl:/home/docker"
-                        sh "scp docker-compose.yml docker@docker@joeriabbo.nl:/home/docker"
-                        sh "ssh -o StrictHostKeyChecking=no docker@docker@joeriabbo.nl $(shellCmd)"
+                        sh "scp server.sh ${ec2Instance}:/home/docker"
+                        sh "scp docker-compose.yml ${ec2Instance}:/home/docker"
+                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} $(shellCmd)"
                     }
                 }
             }
