@@ -1,4 +1,3 @@
-def gv
 
 pipeline {
     agent any
@@ -14,13 +13,6 @@ pipeline {
                 }
             }
         }
-          stage("init") {
-            steps {
-                script {
-                    gv = load "script.groovy"
-                }
-            }
-        }
         stage("build jar") {
             steps {
                 script {
@@ -32,20 +24,20 @@ pipeline {
         stage("build image") {
             steps {
                 script {
-                    echo "building image"
- echo "building the docker image..."
-    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-        sh "docker build -t $(IMAGE_NAME) ."
-        sh "echo $PASS | docker login -u $USER --password-stdin"
-        sh "docker push $(IMAGE_NAME)"
-    }                }
+                    echo "building the docker image..."
+                    buildImage(env.IMAGE_NAME)
+                    dockerLogin()
+                    dockerPush(env.IMAGE_NAME)
             }
         }
         stage("deploy") {
             steps {
                 script {
                     echo "deploying"
-                    gv.deployApp()
+                    def dockerCmd = "docker run -d -p 8080:8080 $(IMAGE_NAME)"
+                    sshagent(['ec2-server-key']){
+                        sh "ssh -o StrictHostKeyChecking=no docker@docker@joeriabbo.nl $(dockerCmd)"
+                    }
                 }
             }
         }
