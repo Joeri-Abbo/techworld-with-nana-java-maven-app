@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-maven-app
+  labels:
+    app: java-maven-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: java-maven-app
+  template:
+    metadata:
+      labels:
+        app: java-maven-app
+    spec:
+      imagePullSecrets:
+        - name: my-registry-key
+      containers:
+        - name: java-maven-app
+          image: joeri-abbo/demo-app:$IMAGE_NAME
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
