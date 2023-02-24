@@ -43,7 +43,9 @@ pipeline {
             steps {
                 script {
                     echo "Wating for EC2 server to init"
-                    sh 'kubectl create deployment nginx-deployment --image=nginx'
+                    withKubeConfig([credentialsId: 'lke-credentials', serverUrl: 'URL']) {
+                        sh 'kubectl create deployment nginx-deployment --image=nginx'
+                    }
                 }
             }
         }
