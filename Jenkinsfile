@@ -13,5 +13,20 @@ pipeline {
                 }
            }
        }
+       stage("run ansible playbook"){
+           steps {
+               scripts {
+                   echo "running ansible playbook"
+                   def remote = [:]
+                   remote.name = "ansible-server"
+                   remote.host = "127.0.0.1"
+                   remote.allowAnyHosts = true
+                   withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key', keyFileVariable: 'keyfile', usernameVariable: 'user')])
+                        remote.user = user
+                        remote.identityFile = keyfile
+                        sshCommand remote: remote, command: "ansible-playbook my-playbook.yaml"
+               }
+           }
+       }
    }
 }
