@@ -1,0 +1,91 @@
+---
+- name: Wait for ssh connection
+  hosts: aws_ec2
+  gather_facts: no
+  tasks:
+    - name: Wait for ssh connection
+      wait_for_connection:
+        delay: 10
+        timeout: 100
+        search_regex: OpenSSH
+        host: "{{ (ansible_host | default(ansible_host) | default(inventory_hostname)) }}"
+
+      vars:
+        ansible_connection: local
+        ansible_python_interpreter: /usr/bin/python3
+- name: Install python3
+  hosts: aws_ec2
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Install python3
+      vars:
+        ansible_python_interpreter: /usr/bin/python
+      become: yes
+      yum:
+        name: python3
+        update_cache: yes
+        state: present
+    - name: Install docker python module
+      become: yes
+      pip:
+        name:
+          - docker
+          - docker-compose
+
+- name: Create linux user
+  hosts: aws_ec2
+  become: yes
+  tasks:
+    - name: Create linux user
+      user:
+        name: joeriabbo
+        groups: "{{user_groups}}"
+
+- name: Install Docker
+  hosts: aws_ec2
+  become: yes
+  tasks:
+    - name: Install Docker
+      become: yes
+      yum:
+        name: docker
+        update_cache: yes
+        state: present
+    - name: Start Docker
+      become: yes
+      service:
+        name: docker
+        state: started
+    - name: Install docker-compose
+      become: yes
+      get_url:
+        url: https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-linux-x86_64
+        dest: /usr/local/bin/docker-compose
+- name: Start docker
+  hosts: aws_ec2
+  become: yes
+  tasks:
+    - name: Start docker
+      systemd:
+        name: docker
+        state: started
+- name: Start docker containers
+  hosts: aws_ec2
+  become: yes
+  become_user: joeriabbo
+  vars_files:
+    - project-vars
+  tasks:
+    - name: Copy docker compose
+      copy:
+        src: /Users/joeriabbo/Sites/devops/techworld-with-nana/Joeri-Abbo-techworld-with-nana-ansible/files/docker-compose.yml
+        dest: /home/joeriabbo/docker-compose.yml
+    - name: Docker login
+      docker_login:
+        username: joeriabbo
+        password: "{{ docker_password }}"
+    - name: Start docker containers from compose
+      docker_compose:
+        project_src: /home/joeriabbo
+        state: present
