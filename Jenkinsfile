@@ -16,7 +16,6 @@ pipeline {
         }
         stage("build") {
             steps {
-               
                 script {
                     gv.buildApp()
                 }
@@ -35,9 +34,17 @@ pipeline {
             }
         }
         stage("deploy") {
+            input {
+                message "select the environment to deploy to"
+                ok "env selected"
+                parameters {
+                    choice(name: 'ENV', choices: ['dev', 'qa', 'prod'], description:'')
+                }
+            }  // ← Added missing closing brace here
             steps {
                 script {
                     gv.deployApp()
+                    echo "deploying to ${ENV}"  // ← Changed to ${ENV} instead of ${params.ENV}
                 }
             }
         }
