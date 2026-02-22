@@ -1,20 +1,20 @@
-pileline {
+pipeline {
     agent any
     stages {
         stage('build') {
             steps {
                 echo 'Building...'
             }
-        }
-    stage('test') {
+        }  // ← Missing closing brace added
+        stage('test') {
             steps {
                 echo 'Testing...'
             }
-        }
-    stage('deploy') {
+        }  // ← Missing closing brace added
+        stage('deploy') {
             steps {
                 echo 'Deploying...'
             }
-        }
+        }  // ← This one was already there (last stage)
     }
 }
