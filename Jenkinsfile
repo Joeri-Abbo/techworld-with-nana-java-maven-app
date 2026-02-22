@@ -38,13 +38,15 @@ pipeline {
                 message "select the environment to deploy to"
                 ok "env selected"
                 parameters {
-                    choice(name: 'ENV', choices: ['dev', 'qa', 'prod'], description:'')
+                    choice(name: 'ONE', choices: ['dev', 'qa', 'prod'], description:'')
+                    choice(name: 'TWO', choices: ['dev', 'qa', 'prod'], description:'')
                 }
             }  // ← Added missing closing brace here
             steps {
                 script {
                     gv.deployApp()
-                    echo "deploying to ${ENV}"  // ← Changed to ${ENV} instead of ${params.ENV}
+                    echo "deploying to ${params.ONE}"  // ← Changed to ${params.ONE} instead of ${params.ENV}
+                    echo "deploying to ${params.TWO}"
                 }
             }
         }
