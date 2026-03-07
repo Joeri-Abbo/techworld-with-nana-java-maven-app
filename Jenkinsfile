@@ -1,42 +1,38 @@
-def gv
-pipeline{
-    agent  any
-    tools{
-        maven 'maven-3.92'
-    }
-    stages{
-        stage("init"){
-            steps{
+pipeline {
+    agent any
+    stages {
+        stage("test") {
+            steps {
                 script{
-                    gv  =  load  "script.groovy"
+                    echo "Testing the application...."
+                    echo "Executing pipeline for branch $BRANCH_NAME"
                 }
             }
         }
-        stage('buildJar'){
-            steps{
-                script{
-                    gv.buildJar()
-
+        stage("build") {
+            when {
+                expression {
+                    BRANCH_NAME == "master"
                 }
-                
             }
-        }
-          stage('Buildimage'){
-            steps{
+            steps {
                 script{
-                    gv.buildimage()
-
-                }
-                
-            }
-        }
-        stage ('deploy'){
-            steps{
-                script{
-                    echo "deploying the application"
-
+                    echo "Building the application...."
                 }
             }
         }
+        
+        stage("deploy") {
+            when {
+                expression {
+                    BRANCH_NAME == "master"
+                }
+            }
+            steps {
+                script{
+                    echo "Deploying the application...."
+                }
+            }
+        }  // ← Added missing closing brace here
     }
 }
