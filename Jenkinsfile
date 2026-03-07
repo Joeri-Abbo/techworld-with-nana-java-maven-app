@@ -1,52 +1,38 @@
-def gv
-pipeline {
-    agent any
-    parameters {
-        choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description:'')
-        booleanParam(name: 'executeTests', defaultValue: true, description:'')
+pipeline{
+    agent  any
+    tools{
+        maven 'maven-3.9'
     }
-    
-    stages {
-        stage ("init"){
-            steps {
-                script {
-                    gv = load "script.groovy"
+    stages{
+        stage('build  jar'){
+            steps{
+                script{
+                    echo  "building  the application"
+                    sh 'mvn clean package'
+
                 }
+                
             }
         }
-        stage("build") {
-            steps {
-                script {
-                    gv.buildApp()
+          stage('Build  image'){
+            steps{
+                script{
+                    echo  "building  the docker image"
+                    withCredentaials([usernamePassword(credentialsId:'docker -hub-repo',  passwordVariable: 'PASS', usernameVariable: 'USER')]){
+                        sh  'docker build -t piratehammad/demo-app:jma-2.0 .'
+                        sh "echo  $PASS  | docker login -u $USER --password-stdin"
+                        sh 'docker push piratehammad/demo-app:jma-2.0'
+                    }
+
                 }
+                
             }
         }
-        stage("test") {
-            when {
-                expression {
-                    params.executeTests
-                }
-            }
-            steps {
-                script {
-                    gv.testApp()
-                }
-            }
-        }
-        stage("deploy") {
-            input {
-                message "select the environment to deploy to"
-                ok "env selected"
-                parameters {
-                    choice(name: 'ONE', choices: ['dev', 'qa', 'prod'], description:'')
-                    choice(name: 'TWO', choices: ['dev', 'qa', 'prod'], description:'')
-                }
-            }  // ← Added missing closing brace here
-            steps {
-                script {
-                    gv.deployApp()
-                    echo "deploying to ${params.ONE}"  // ← Changed to ${params.ONE} instead of ${params.ENV}
-                    echo "deploying to ${params.TWO}"
+        stage ('deploy'){
+            steps{
+                script{
+                    echo "deploying the application"
+
                 }
             }
         }
