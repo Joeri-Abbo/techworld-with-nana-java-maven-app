@@ -11,5 +11,8 @@ def buildimage() {
                         sh 'docker push piratehammad/demo-app:jma-2.0'
                     }
 }
+def deployApp() {
+    echo 'deploying the application...'
+}
 
 return this
