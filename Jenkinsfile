@@ -19,7 +19,7 @@ pipeline {
                 }
             }
         }
-        stage("build image") {
+        stage("buildimage") {
             steps {
                 script{
                     gv.buildImage()
