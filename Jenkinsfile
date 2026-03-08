@@ -12,7 +12,7 @@ pipeline {
                 }
             }
         }
-        stage("build jar") {
+        stage("buildjar") {
             steps {
                 script{
                     gv.buildJar()
