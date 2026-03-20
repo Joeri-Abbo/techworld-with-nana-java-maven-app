@@ -54,7 +54,7 @@ pipeline {
                         sh 'git status'
                         sh 'git branch'
                         sh 'git config --list'
-                        sh "git remote set-url origin https://\${USER}:\${PASS}@github.com/import-Hammad/techworld-with-nana-java-maven-app.git"
+                        sh "git remote set-url origin https://${USER}:\${PASS}@github.com/import-Hammad/techworld-with-nana-java-maven-app.git"
                         sh 'git add .'
                         sh 'git commit -m "increment version number to ${IMAGE_NAME}"'
                         sh 'git push origin HEAD:master'
