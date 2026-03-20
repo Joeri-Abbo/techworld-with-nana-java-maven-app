@@ -30,9 +30,9 @@ pipeline {
                     passwordVariable: 'PASS',
                     usernameVariable: 'USER'
                 )]) {
-                    
-                    sh "docker build -t piratehammad/demo-app:$IMAGE_NAME ."
                     sh "echo \$PASS | docker login -u \$USER --password-stdin"
+                    sh "docker build -t piratehammad/demo-app:$IMAGE_NAME ."
+                    
                     
                     sh "docker push piratehammad/demo-app:$IMAGE_NAME"
                 }
