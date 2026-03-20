@@ -41,5 +41,25 @@ pipeline {
                 echo 'deploying the application...'
             }
         }
+        stage('commit version update')
+        steps {
+            script {
+                withCredentials([usernamePassword(
+                    credentialsId: 'github-credentials',
+                    passwordVariable: 'PASS',
+                    usernameVariable: 'USER'
+                )])
+                sh 'git config --global user.email "Hammad@example.com"'
+                sh 'git config --global user.name "Hammad"'
+                sh 'git status'
+                sh 'git branch'
+                sh 'git config --list'
+                sh "git remote set-url origin https://\${USER}:\${PASS}@github.com/import-Hammad/techworld-with-nana-java-maven-app.git"
+                sh 'git add .'
+                sh 'git commit -m "increment version number to ${IMAGE_NAME}"'
+                sh 'git push origin HEAD:master'
+
+            }
+        }
     }
 }
