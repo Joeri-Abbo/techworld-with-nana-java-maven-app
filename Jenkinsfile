@@ -17,14 +17,14 @@ pipeline {
         stage('build app') {
             steps {
                 echo 'building application jar...'
-                buildJar()
+                buildjar()
             }
         }
         stage('build image') {
             steps {
                 script {
                     echo 'building the docker image...'
-                    buildImage(env.IMAGE_NAME)
+                    buildimage(env.IMAGE_NAME)
                     dockerLogin()
                     dockerPush(env.IMAGE_NAME)
                 }
