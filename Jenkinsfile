@@ -1,27 +1,42 @@
 #!/usr/bin/env groovy
+library identifier: 'jenkins-shared-lib@master', retriever: modernSCM(
+    [$class: 'GitSCMSource',
+    remote: 'https://github.com/import-Hammad/jenkins-shared-libraries-nana.git',
+    credentialsId: 'github-credentials']
+)
+
 pipeline {
     agent any
+    tools {
+        maven 'maven-3.92'
+    }
+    environment {
+        IMAGE_NAME = 'piratehammad/react-nodejs-app:1.0'
+    }
     stages {
-        stage("test") {
+        stage('build app') {
             steps {
-                script {
-                    echo "Testing the application..."
-                }
+                echo 'building application jar...'
+                buildJar()
             }
         }
-        stage("build") {
+        stage('build image') {
             steps {
                 script {
-                    echo "Building the application..."
+                    echo 'building the docker image...'
+                    buildImage(env.IMAGE_NAME)
+                    dockerLogin()
+                    dockerPush(env.IMAGE_NAME)
                 }
             }
         }
         stage("deploy") {
             steps {
                 script {
-                    def dockerCmd = 'docker run -p 3080:3080 -d piratehammad/react-nodejs-app:1.0'
+                    echo 'deploying docker image to EC2...'
+                    def dockerCmd = "docker run -p 3080:3080 -d ${IMAGE_NAME}"
                     sshagent(['ec2-server-key']) {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@54.87.48.227 ${dockerCmd}"
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@44.220.134.137 ${dockerCmd}"
                     }
                 }
             }
